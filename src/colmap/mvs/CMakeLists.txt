@@ -96,6 +96,8 @@ if(CUDA_ENABLED)
         SRCS gpu_mat_test.cc
         LINK_LIBS colmap_mvs_cuda
     )
+
+    set_source_files_properties(gpu_mat_test.cc PROPERTIES LANGUAGE CUDA)
 endif()
 
 if(METAL_ENABLED)
