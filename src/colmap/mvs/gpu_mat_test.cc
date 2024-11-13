@@ -32,8 +32,13 @@
 #endif  // __CUDACC__
 
 #include "colmap/math/math.h"
+#ifdef COLMAP_CUDA_ENABLED
 #include "colmap/mvs/gpu_mat.h"
 #include "colmap/mvs/gpu_mat_prng.h"
+#else
+#include "colmap/mvs/gpu_mat_metal.h"
+#include "colmap/mvs/gpu_mat_prng_metal.h"
+#endif
 
 #include <gtest/gtest.h>
 
@@ -95,7 +100,9 @@ TEST(GpuMat, Transpose) {
         TestTransposeImage<int32_t>(width, height, d);
         TestTransposeImage<int64_t>(width, height, d);
         TestTransposeImage<float>(width, height, d);
+#ifdef COLMAP_CUDA_ENABLED
         TestTransposeImage<double>(width, height, d);
+#endif
       }
     }
   }
@@ -141,7 +148,9 @@ TEST(GpuMat, FlipHorizontal) {
         TestFlipHorizontalImage<int32_t>(width, height, d);
         TestFlipHorizontalImage<int64_t>(width, height, d);
         TestFlipHorizontalImage<float>(width, height, d);
+#ifdef COLMAP_CUDA_ENABLED
         TestFlipHorizontalImage<double>(width, height, d);
+#endif
       }
     }
   }
@@ -196,7 +205,9 @@ TEST(GpuMat, Rotate) {
         TestRotateImage<int32_t>(width, height, d);
         TestRotateImage<int64_t>(width, height, d);
         TestRotateImage<float>(width, height, d);
+#ifdef COLMAP_CUDA_ENABLED
         TestRotateImage<double>(width, height, d);
+#endif
       }
     }
   }

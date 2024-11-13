@@ -67,3 +67,17 @@ if(FETCH_POSELIB)
 endif()
 
 set(CLANG_TIDY_EXE ${CLANG_TIDY_EXE_TEMP})
+
+if(METAL_ENABLED)
+    include(FetchContent)
+    FetchContent_Declare(metal_cpp
+        URL https://developer.apple.com/metal/cpp/files/metal-cpp_macOS15_iOS18-beta.zip
+    )
+    message(STATUS "Configuring Metal-cpp...")
+    FetchContent_MakeAvailable(metal_cpp)
+    message(STATUS "Configuring Metal-cpp... done")
+    message(STATUS "${metal_cpp_SOURCE_DIR}")
+    target_include_directories(colmap_mvs_metal
+        PUBLIC $<BUILD_INTERFACE:${metal_cpp_SOURCE_DIR}>
+    )
+endif()
