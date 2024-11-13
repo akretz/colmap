@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - release/*
+      - mvs_metal
   pull_request:
     types: [ assigned, opened, synchronize, reopened ]
   release:
