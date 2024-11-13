@@ -38,6 +38,7 @@ option(SIMD_ENABLED "Whether to enable SIMD optimizations" ON)
 option(OPENMP_ENABLED "Whether to enable OpenMP parallelization" ON)
 option(IPO_ENABLED "Whether to enable interprocedural optimization" ON)
 option(CUDA_ENABLED "Whether to enable CUDA, if available" ON)
+option(METAL_ENABLED "Whether to enable METAL, if available" ON)
 option(GUI_ENABLED "Whether to enable the graphical UI" ON)
 option(OPENGL_ENABLED "Whether to enable OpenGL, if available" ON)
 option(TESTS_ENABLED "Whether to build test binaries" OFF)
@@ -351,6 +352,11 @@ if(CUDA_ENABLED)
     list(APPEND COLMAP_EXPORT_LIBS
          colmap_util_cuda
          colmap_mvs_cuda
+    )
+endif()
+if(METAL_ENABLED)
+    list(APPEND COLMAP_EXPORT_LIBS
+         colmap_mvs_metal
     )
 endif()
 if(GPU_ENABLED)

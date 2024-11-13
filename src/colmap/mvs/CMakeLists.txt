@@ -93,7 +93,40 @@ if(CUDA_ENABLED)
 
     COLMAP_ADD_TEST(
         NAME gpu_mat_test
-        SRCS gpu_mat_test.cu
+        SRCS gpu_mat_test.cc
         LINK_LIBS colmap_mvs_cuda
     )
+endif()
+
+if(METAL_ENABLED)
+    COLMAP_ADD_LIBRARY(
+        NAME colmap_mvs_metal
+        SRCS
+            gpu_mat_metal.h gpu_mat_metal.cc
+            gpu_mat_prng_metal.h gpu_mat_prng_metal.cc
+        PUBLIC_LINK_LIBS
+            colmap_mvs
+            "-framework Metal"
+            "-framework Foundation"
+            "-framework QuartzCore"
+    )
+
+    COLMAP_ADD_TEST(
+        NAME gpu_mat_test
+        SRCS gpu_mat_test.cc
+        LINK_LIBS colmap_mvs_metal
+    )
+
+    set(MTLLIB_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/metal_kernels.metal)
+    set(MTLLIB_BUILD_TARGET "${CMAKE_CURRENT_BINARY_DIR}/metal_kernels.metallib")
+    add_custom_command(
+        OUTPUT ${MTLLIB_BUILD_TARGET}
+        COMMAND
+        xcrun -sdk macosx metal ${MTLLIB_SOURCE} -o ${MTLLIB_BUILD_TARGET}
+        DEPENDS ${MTLLIB_SOURCE}
+        COMMAND_EXPAND_LISTS
+        COMMENT "Building Metal kernels"
+        VERBATIM)
+    add_custom_target(metallib DEPENDS ${MTLLIB_BUILD_TARGET})
+    add_dependencies(colmap_mvs_metal metallib)
 endif()
