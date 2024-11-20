@@ -106,6 +106,8 @@ if(METAL_ENABLED)
         SRCS
             gpu_mat_metal.h gpu_mat_metal.cc
             gpu_mat_prng_metal.h gpu_mat_prng_metal.cc
+            patch_match.h patch_match.cc
+            patch_match_metal.h patch_match_metal.cc
         PUBLIC_LINK_LIBS
             colmap_mvs
             "-framework Metal"

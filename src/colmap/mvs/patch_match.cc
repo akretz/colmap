@@ -31,7 +31,11 @@
 
 #include "colmap/math/math.h"
 #include "colmap/mvs/consistency_graph.h"
+#ifdef COLMAP_CUDA_ENABLED
 #include "colmap/mvs/patch_match_cuda.h"
+#else
+#include "colmap/mvs/patch_match_metal.h"
+#endif
 #include "colmap/mvs/workspace.h"
 #include "colmap/util/file.h"
 #include "colmap/util/misc.h"
@@ -157,27 +161,27 @@ void PatchMatch::Run() {
 
   Check();
 
-  patch_match_cuda_ = std::make_unique<PatchMatchCuda>(options_, problem_);
-  patch_match_cuda_->Run();
+  patch_match_impl_ = std::make_unique<PatchMatchImpl>(options_, problem_);
+  patch_match_impl_->Run();
 }
 
 DepthMap PatchMatch::GetDepthMap() const {
-  return patch_match_cuda_->GetDepthMap();
+  return patch_match_impl_->GetDepthMap();
 }
 
 NormalMap PatchMatch::GetNormalMap() const {
-  return patch_match_cuda_->GetNormalMap();
+  return patch_match_impl_->GetNormalMap();
 }
 
 Mat<float> PatchMatch::GetSelProbMap() const {
-  return patch_match_cuda_->GetSelProbMap();
+  return patch_match_impl_->GetSelProbMap();
 }
 
 ConsistencyGraph PatchMatch::GetConsistencyGraph() const {
   const auto& ref_image = problem_.images->at(problem_.ref_image_idx);
   return ConsistencyGraph(ref_image.GetWidth(),
                           ref_image.GetHeight(),
-                          patch_match_cuda_->GetConsistentImageIdxs());
+                          patch_match_impl_->GetConsistentImageIdxs());
 }
 
 PatchMatchController::PatchMatchController(const PatchMatchOptions& options,
@@ -398,12 +402,14 @@ void PatchMatchController::ReadProblems() {
 
 void PatchMatchController::ReadGpuIndices() {
   gpu_indices_ = CSVToVector<int>(options_.gpu_index);
+#ifdef COLMAP_CUDA_ENABLED
   if (gpu_indices_.size() == 1 && gpu_indices_[0] == -1) {
     const int num_cuda_devices = GetNumCudaDevices();
     THROW_CHECK_GT(num_cuda_devices, 0);
     gpu_indices_.resize(num_cuda_devices);
     std::iota(gpu_indices_.begin(), gpu_indices_.end(), 0);
   }
+#endif
 }
 
 void PatchMatchController::ProcessProblem(const PatchMatchOptions& options,

@@ -52,7 +52,13 @@ namespace mvs {
 const static size_t kMaxPatchMatchWindowRadius = 32;
 
 class ConsistencyGraph;
+#ifdef COLMAP_CUDA_ENABLED
 class PatchMatchCuda;
+typedef PatchMatchCuda PatchMatchImpl;
+#else
+class PatchMatchMetal;
+typedef PatchMatchMetal PatchMatchImpl;
+#endif
 class Workspace;
 
 struct PatchMatchOptions {
@@ -213,7 +219,7 @@ class PatchMatch {
  private:
   const PatchMatchOptions options_;
   const Problem problem_;
-  std::unique_ptr<PatchMatchCuda> patch_match_cuda_;
+  std::unique_ptr<PatchMatchImpl> patch_match_impl_;
 };
 
 // This thread processes all problems in a workspace. A workspace has the
