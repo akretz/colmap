@@ -76,11 +76,11 @@ int RunDelaunayMesher(int argc, char** argv) {
 }
 
 int RunPatchMatchStereo(int argc, char** argv) {
-#if !defined(COLMAP_CUDA_ENABLED)
+#if !defined(COLMAP_CUDA_ENABLED) && !defined(COLMAP_METAL_ENABLED)
   LOG(ERROR) << "Dense stereo reconstruction requires CUDA, which is not "
                 "available on your system.";
   return EXIT_FAILURE;
-#else   // COLMAP_CUDA_ENABLED
+#else   // COLMAP_CUDA_ENABLED || COLMAP_METAL_ENABLED
   std::string workspace_path;
   std::string workspace_format = "COLMAP";
   std::string pmvs_option_name = "option-all";
@@ -114,7 +114,7 @@ int RunPatchMatchStereo(int argc, char** argv) {
   controller.Run();
 
   return EXIT_SUCCESS;
-#endif  // COLMAP_CUDA_ENABLED
+#endif  // COLMAP_CUDA_ENABLED || COLMAP_METAL_ENABLED
 }
 
 int RunPoissonMesher(int argc, char** argv) {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "colmap/mvs/mat.h"
+
 #include <filesystem>
 
 #include <Metal/Metal.hpp>
@@ -46,7 +48,7 @@ class GpuMat {
 
   void CopyToDevice(const T* data, uint32_t pitch);
   void CopyToHost(T* data, uint32_t pitch) const;
-  // Mat<T> CopyToMat() const;
+  Mat<T> CopyToMat() const;
 
   // Transpose array by swapping x and y coordinates.
   void Transpose(GpuMat<T>* output);
@@ -168,6 +170,13 @@ void GpuMat<T>::CopyToHost(T* data, uint32_t pitch) const {
       data += pitch / sizeof(T);
     }
   }
+}
+
+template <typename T>
+Mat<T> GpuMat<T>::CopyToMat() const {
+  Mat<T> mat(width_, height_, depth_);
+  CopyToHost(mat.GetPtr(), mat.GetWidth() * sizeof(T));
+  return mat;
 }
 
 template <typename T>
